@@ -1,0 +1,21 @@
+{
+  "name": "final-project-seng8071",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gongjian1981/final-project-seng8071.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/gongjian1981/final-project-seng8071/issues"
+  },
+  "homepage": "https://github.com/gongjian1981/final-project-seng8071#readme"
+}
