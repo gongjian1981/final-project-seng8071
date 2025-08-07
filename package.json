@@ -1,21 +1,27 @@
 {
   "name": "final-project-seng8071",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "ts-node src/index.ts",
+    "test": "jest",
+    "docker:up": "docker-compose up -d"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/gongjian1981/final-project-seng8071.git"
+  "dependencies": {
+    "class-validator": "^0.14.2",
+    "express": "^4.17.1",
+    "pg": "^8.16.3",
+    "pino": "^9.7.0",
+    "typeorm": "^0.3.25"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/gongjian1981/final-project-seng8071/issues"
-  },
-  "homepage": "https://github.com/gongjian1981/final-project-seng8071#readme"
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^24.0.12",
+    "@types/supertest": "^2.0.16",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.4",
+    "ts-jest": "^29.4.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.3"
+  }
 }

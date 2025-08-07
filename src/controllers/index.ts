@@ -1,0 +1,12 @@
+export { createCertificationRouter } from "./CertificationController";
+export { createCustomerRouter } from "./CustomerController";
+export { createCustomerPhoneRouter } from "./CustomerPhoneController";
+export { createDriverRouter } from "./DriverController";
+export { createEmployeeRouter } from "./EmployeeController";
+export { createMechanicRouter } from "./MechanicController";
+export { createRepairRecordRouter } from "./RepairRecordController";
+export { createShipmentRouter } from "./ShipmentController";
+export { createTripRouter } from "./TripController";
+export { createTripDriverRouter } from "./TripDriverController";
+export { createVehicleRouter } from "./VehicleController";
+export { createVehicleTypeRouter } from "./VehicleTypeController";
