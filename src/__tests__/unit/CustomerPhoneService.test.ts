@@ -1,14 +1,14 @@
-import { CustomerPhoneService } from "../../services/CustomerPhoneService";
+import { Customer } from "../../entities/Customer";
 import { CustomerPhone } from "../../entities/CustomerPhone";
 import { PersistenceError } from "../../errors/PersistenceError";
 import { CustomerPhoneRepository } from "../../repositories/CustomerPhoneRepository";
-import { get } from "http";
-import { Customer } from "../../entities/Customer";
+import { CustomerPhoneService } from "../../services/CustomerPhoneService";
 
 describe("CustomerPhoneService", () => {
   const mockCustomerPhone = new CustomerPhone();
   mockCustomerPhone.CustomerPhoneID = 1;
   mockCustomerPhone.PhoneNumber = "123-456-7890";
+  
   const mockCustomer = new Customer();
   mockCustomer.CustomerID = 1;
   mockCustomer.CustomerName = "Amazon Logistics";
@@ -52,8 +52,22 @@ describe("CustomerPhoneService", () => {
     expect(result).toEqual(newCustomerPhone);
   });
 
-  it("throws PersistenceError for invalid customer phone data", async () => {
+  it("throws PersistenceError for creating customer phone without customer", async () => {
     const invalidCustomerPhone = new CustomerPhone();
+    invalidCustomerPhone.PhoneNumber = "123-456-7890";
+    const service = new CustomerPhoneService(mockRepo as unknown as CustomerPhoneRepository);
+    await expect(service.createCustomerPhone(invalidCustomerPhone)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.createCustomerPhone(invalidCustomerPhone)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for creating customer phone without phone number", async () => {
+    const invalidCustomerPhone = new CustomerPhone();
+    invalidCustomerPhone.Customer = mockCustomer;
     const service = new CustomerPhoneService(mockRepo as unknown as CustomerPhoneRepository);
     await expect(service.createCustomerPhone(invalidCustomerPhone)).rejects.toThrow(
       PersistenceError
@@ -74,9 +88,36 @@ describe("CustomerPhoneService", () => {
     expect(mockRepo.update).toHaveBeenCalledWith(editedCustomerPhone);
   });
 
-  it("throws PersistenceError for invalid customer phone data", async () => {
+  it("throws PersistenceError for updating customer phone without CustomerPhoneID", async () => {
     const invalidCustomerPhone = new CustomerPhone();
     invalidCustomerPhone.Customer = mockCustomer;
+    invalidCustomerPhone.PhoneNumber = "234-567-8901";
+    await expect(service.updateCustomerPhone(invalidCustomerPhone)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.updateCustomerPhone(invalidCustomerPhone)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for updating customer phone without phone number", async () => {
+    const invalidCustomerPhone = new CustomerPhone();
+    invalidCustomerPhone.CustomerPhoneID = 1;
+    invalidCustomerPhone.Customer = mockCustomer;
+    await expect(service.updateCustomerPhone(invalidCustomerPhone)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.updateCustomerPhone(invalidCustomerPhone)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for updating customer phone without customer", async () => {
+    const invalidCustomerPhone = new CustomerPhone();
+    invalidCustomerPhone.CustomerPhoneID = 1;
+    invalidCustomerPhone.PhoneNumber = "234-567-8901";
     await expect(service.updateCustomerPhone(invalidCustomerPhone)).rejects.toThrow(
       PersistenceError
     );

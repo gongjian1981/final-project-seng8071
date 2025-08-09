@@ -2,9 +2,10 @@ import { RepairRecordRepository } from "../repositories/RepairRecordRepository";
 import { RepairRecord } from "../entities/RepairRecord";
 import { validate } from "class-validator";
 import { PersistenceError } from "../errors/PersistenceError";
+import { VehicleRepository } from "../repositories/VehicleRepository";
 
 export class RepairRecordService {
-  constructor(private repo: RepairRecordRepository) {}
+  constructor(private repo: RepairRecordRepository, private vehicleRep: VehicleRepository) {}
 
   async getAllRepairRecords(): Promise<RepairRecord[]> {
     return this.repo.getAll();
@@ -26,7 +27,18 @@ export class RepairRecordService {
       throw new PersistenceError(`Validation failed: ${errorMessages}`, 400);
     }
 
-    return this.repo.create(repairRecord);
+    let record = await this.repo.create(repairRecord);
+    
+    const vehicle = repairRecord.Vehicle;
+    if (vehicle && vehicle.VehicleID) {
+      const editVehicle = await this.vehicleRep.findById(vehicle.VehicleID);
+      if (editVehicle) {
+        editVehicle.NumberOfRepairs += 1;
+        await this.vehicleRep.update(editVehicle);
+      }
+    }
+
+    return record;
   }
 
   async updateRepairRecord(data: Partial<RepairRecord>): Promise<RepairRecord> {
@@ -52,6 +64,13 @@ export class RepairRecordService {
   }
 
   async deleteRepairRecord(id: number): Promise<void> {
-    return this.repo.delete(id);
+    const repairRecord = await this.repo.findById(id);
+    if (repairRecord && repairRecord.Vehicle) {
+      repairRecord.Vehicle.NumberOfRepairs -= 1;
+      await this.vehicleRep.update(repairRecord.Vehicle);
+    }
+
+    let record = await this.repo.delete(id);
+    return record; 
   }
 }

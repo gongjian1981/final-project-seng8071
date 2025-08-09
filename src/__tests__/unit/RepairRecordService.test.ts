@@ -1,21 +1,23 @@
-import { RepairRecordService } from "../../services/RepairRecordService";
+import { Mechanic } from "../../entities/Mechanic";
 import { RepairRecord } from "../../entities/RepairRecord";
+import { Vehicle } from "../../entities/Vehicle";
 import { PersistenceError } from "../../errors/PersistenceError";
 import { RepairRecordRepository } from "../../repositories/RepairRecordRepository";
-import { get } from "http";
-import { Mechanic } from "../../entities/Mechanic";
-import { Vehicle } from "../../entities/Vehicle";
+import { VehicleRepository } from "../../repositories/VehicleRepository";
+import { RepairRecordService } from "../../services/RepairRecordService";
 
 describe("RepairRecordService", () => {
   const mockRepairRecord = new RepairRecord();
   mockRepairRecord.RepairRecordID = 1;
   mockRepairRecord.EstimatedTime = 100;
   mockRepairRecord.ActualCostTime = 99;
+
   const mockMechanic = new Mechanic();
   mockMechanic.MechanicID = 1;
+  mockRepairRecord.Mechanic = mockMechanic;
+
   const mockVehicle = new Vehicle();
   mockVehicle.VehicleID = 1;
-  mockRepairRecord.Mechanic = mockMechanic;
   mockRepairRecord.Vehicle = mockVehicle;
     
   let service: RepairRecordService;
@@ -28,6 +30,14 @@ describe("RepairRecordService", () => {
     delete: RepairRecordRepository["delete"];
   }>;
 
+  let mockVehicleRepo: jest.Mocked<{
+    findById: VehicleRepository["findById"];
+    getAll: VehicleRepository["getAll"];
+    create: VehicleRepository["create"];
+    update: VehicleRepository["update"];
+    delete: VehicleRepository["delete"];
+  }>;
+
   beforeEach(() => {
     mockRepo = {
       findById: jest.fn().mockResolvedValue(mockRepairRecord),
@@ -36,7 +46,16 @@ describe("RepairRecordService", () => {
       update: jest.fn().mockImplementation((repairRecord) => Promise.resolve(repairRecord)),
       delete: jest.fn().mockImplementation(() => Promise.resolve()),
     };
-    service = new RepairRecordService(mockRepo as unknown as jest.Mocked<RepairRecordRepository>);
+    mockVehicleRepo = {
+      findById: jest.fn().mockResolvedValue(mockVehicle),
+      getAll: jest.fn().mockResolvedValue([mockVehicle]),
+      create: jest.fn().mockImplementation((vehicle) => Promise.resolve(vehicle)),
+      update: jest.fn().mockImplementation((vehicle) => Promise.resolve(vehicle)),
+      delete: jest.fn().mockImplementation(() => Promise.resolve()),
+    };
+    service = new RepairRecordService(mockRepo as unknown as jest.Mocked<RepairRecordRepository>, 
+      mockVehicleRepo as unknown as jest.Mocked<VehicleRepository>
+    );
 
   });
 
@@ -52,15 +71,27 @@ describe("RepairRecordService", () => {
     newRepairRecord.EstimatedTime = 99;
     newRepairRecord.Mechanic = mockMechanic;
     newRepairRecord.Vehicle = mockVehicle;
-    const service = new RepairRecordService(mockRepo as unknown as RepairRecordRepository);
+    const service = new RepairRecordService(mockRepo as unknown as RepairRecordRepository, mockVehicleRepo as unknown as VehicleRepository);
     const result = await service.createRepairRecord(newRepairRecord);
     expect(mockRepo.create).toHaveBeenCalledWith(newRepairRecord);
     expect(result).toEqual(newRepairRecord);
   });
 
-  it("throws PersistenceError for invalid repair record data", async () => {
+  it("throws PersistenceError for createing repair record without mechanic", async () => {
     const invalidRepairRecord = new RepairRecord();
-    const service = new RepairRecordService(mockRepo as unknown as RepairRecordRepository);
+    invalidRepairRecord.Vehicle = mockVehicle;
+    await expect(service.createRepairRecord(invalidRepairRecord)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.createRepairRecord(invalidRepairRecord)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for createing repair record without vehicle", async () => {
+    const invalidRepairRecord = new RepairRecord();
+    invalidRepairRecord.Mechanic = mockMechanic;
     await expect(service.createRepairRecord(invalidRepairRecord)).rejects.toThrow(
       PersistenceError
     );
@@ -83,10 +114,42 @@ describe("RepairRecordService", () => {
     expect(mockRepo.update).toHaveBeenCalledWith(editedRepairRecord);
   });
 
-  it("throws PersistenceError for invalid repairRecord data", async () => {
+  it("throws PersistenceError for updating repair record without RepairRecordID", async () => {
     const invalidRepairRecord = new RepairRecord();
     invalidRepairRecord.EstimatedTime = 200;
     invalidRepairRecord.ActualCostTime = 199;
+    invalidRepairRecord.Mechanic = mockMechanic;
+    invalidRepairRecord.Vehicle = mockVehicle;
+    await expect(service.updateRepairRecord(invalidRepairRecord)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.updateRepairRecord(invalidRepairRecord)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for updating repair record without mechanic", async () => {
+    const invalidRepairRecord = new RepairRecord();
+    invalidRepairRecord.RepairRecordID = 1;
+    invalidRepairRecord.EstimatedTime = 200;
+    invalidRepairRecord.ActualCostTime = 199;
+    invalidRepairRecord.Vehicle = mockVehicle;
+    await expect(service.updateRepairRecord(invalidRepairRecord)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.updateRepairRecord(invalidRepairRecord)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for updating repair record without vehicle", async () => {
+    const invalidRepairRecord = new RepairRecord();
+    invalidRepairRecord.RepairRecordID = 1;
+    invalidRepairRecord.EstimatedTime = 200;
+    invalidRepairRecord.ActualCostTime = 199;
+    invalidRepairRecord.Mechanic = mockMechanic;
     await expect(service.updateRepairRecord(invalidRepairRecord)).rejects.toThrow(
       PersistenceError
     );
@@ -97,7 +160,6 @@ describe("RepairRecordService", () => {
   });
 
   it("deletes a repair record", async () => {
-    const service = new RepairRecordService(mockRepo as unknown as RepairRecordRepository);
     await service.deleteRepairRecord(1);
     expect(mockRepo.delete).toHaveBeenCalledWith(1);
   });
@@ -106,7 +168,6 @@ describe("RepairRecordService", () => {
     mockRepo.delete.mockImplementation(() => {
       throw new PersistenceError("RepairRecord not found", 404);
     });
-    const service = new RepairRecordService(mockRepo as unknown as RepairRecordRepository);
     await expect(service.deleteRepairRecord(9999999999)).rejects.toThrow(PersistenceError);
     await expect(service.deleteRepairRecord(9999999999)).rejects.toHaveProperty(
       "status",

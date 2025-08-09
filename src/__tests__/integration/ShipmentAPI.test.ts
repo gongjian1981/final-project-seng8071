@@ -1,9 +1,9 @@
 import request from "supertest";
 import { DataSource } from "typeorm";
-import { initializeApp } from "../../index";
-import { Shipment } from "../../entities/Shipment";
-import { getTestDataSource, closeTestDataSource } from "../../test-utils/db";
 import { Customer } from "../../entities/Customer";
+import { Shipment } from "../../entities/Shipment";
+import { initializeApp } from "../../index";
+import { closeTestDataSource, getTestDataSource } from "../../test-utils/db";
 
 describe("Shipments API", () => {
   let connection: DataSource;
@@ -39,6 +39,7 @@ describe("Shipments API", () => {
     process.env.NODE_ENV = "test";
     connection = await getTestDataSource();
     app = await initializeApp(connection);
+    
     const customerRepo = connection.getRepository(Customer);
     await customerRepo.query("TRUNCATE TABLE customer RESTART IDENTITY CASCADE;");
     await customerRepo.save({

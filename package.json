@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "ts-node src/index.ts",
-    "test": "jest --runInBand",
+    "test": "jest --runInBand --verbose",
     "docker:up": "docker-compose up -d"
   },
   "dependencies": {

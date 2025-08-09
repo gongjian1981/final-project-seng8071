@@ -1,18 +1,19 @@
-import { MechanicService } from "../../services/MechanicService";
+import { Employee } from "../../entities/Employee";
 import { Mechanic } from "../../entities/Mechanic";
+import { VehicleType } from "../../entities/VehicleType";
 import { PersistenceError } from "../../errors/PersistenceError";
 import { MechanicRepository } from "../../repositories/MechanicRepository";
-import { get } from "http";
-import { VehicleType } from "../../entities/VehicleType";
-import { Employee } from "../../entities/Employee";
+import { MechanicService } from "../../services/MechanicService";
 
 describe("MechanicService", () => {
   const mockMechanic = new Mechanic();
   mockMechanic.MechanicID = 1;
+
   const mockVihecleType = new VehicleType();
   mockVihecleType.VehicleTypeID = 1;
   mockVihecleType.VehicleTypeName = "Cargo Truck";
   mockMechanic.VehicleType = mockVihecleType;
+  
   const mockEmployee = new Employee();
   mockEmployee.EmployeeID = 1;
   mockEmployee.FirstName = "John";
@@ -57,8 +58,22 @@ describe("MechanicService", () => {
     expect(result).toEqual(newMechanic);
   });
 
-  it("throws PersistenceError for invalid mechanic data", async () => {
+  it("throws PersistenceError for creating mechanic without employee", async () => {
     const invalidMechanic = new Mechanic();
+    invalidMechanic.VehicleType = mockVihecleType;
+    const service = new MechanicService(mockRepo as unknown as MechanicRepository);
+    await expect(service.createMechanic(invalidMechanic)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.createMechanic(invalidMechanic)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for creating mechanic without vehicle type", async () => {
+    const invalidMechanic = new Mechanic();
+    invalidMechanic.Employee = mockEmployee;
     const service = new MechanicService(mockRepo as unknown as MechanicRepository);
     await expect(service.createMechanic(invalidMechanic)).rejects.toThrow(
       PersistenceError
@@ -80,8 +95,35 @@ describe("MechanicService", () => {
     expect(mockRepo.update).toHaveBeenCalledWith(editedMechanic);
   });
 
-  it("throws PersistenceError for invalid mechanic data", async () => {
+  it("throws PersistenceError for updating mechanic data without MechanicID", async () => {
     const invalidMechanic = new Mechanic();
+    invalidMechanic.VehicleType = mockVihecleType;
+    invalidMechanic.Employee = mockEmployee;
+    await expect(service.updateMechanic(invalidMechanic)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.updateMechanic(invalidMechanic)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for updating mechanic data without employee", async () => {
+    const invalidMechanic = new Mechanic();
+    invalidMechanic.MechanicID = 1;
+    invalidMechanic.VehicleType = mockVihecleType;
+    await expect(service.updateMechanic(invalidMechanic)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.updateMechanic(invalidMechanic)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for updating mechanic data without vehicle type", async () => {
+    const invalidMechanic = new Mechanic();
+    invalidMechanic.Employee = mockEmployee;
     await expect(service.updateMechanic(invalidMechanic)).rejects.toThrow(
       PersistenceError
     );

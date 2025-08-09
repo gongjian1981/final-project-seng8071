@@ -4,12 +4,15 @@ import { RepairRecord } from "../entities/RepairRecord";
 import { PersistenceError } from "../errors/PersistenceError";
 import { RepairRecordRepository } from "../repositories/RepairRecordRepository";
 import { RepairRecordService } from "../services/RepairRecordService";
+import { Vehicle } from "../entities/Vehicle";
+import { VehicleRepository } from "../repositories/VehicleRepository";
 
 export const createRepairRecordRouter = (dataSource: DataSource): Router => {
   const router = Router();
 
   const repo = new RepairRecordRepository(dataSource.getRepository(RepairRecord));
-  const service = new RepairRecordService(repo);
+  const vehicleRepo = new VehicleRepository(dataSource.getRepository(Vehicle));
+  const service = new RepairRecordService(repo, vehicleRepo);
 
   router.get("/", async (req, res) => {
     try {
@@ -25,6 +28,7 @@ export const createRepairRecordRouter = (dataSource: DataSource): Router => {
       const repairRecord = await service.createRepairRecord(req.body);
       res.status(201).json(repairRecord);
     } catch (error: any) {
+      console.error("Error creating repair record:", error);
       const status = error instanceof PersistenceError ? error.status : 500;
       res.status(status).json({ error: error.message });
     }

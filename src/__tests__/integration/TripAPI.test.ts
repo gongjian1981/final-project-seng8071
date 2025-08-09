@@ -1,10 +1,12 @@
 import request from "supertest";
 import { DataSource } from "typeorm";
-import { initializeApp } from "../../index";
+import { Customer } from "../../entities/Customer";
+import { Shipment } from "../../entities/Shipment";
 import { Trip } from "../../entities/Trip";
-import { getTestDataSource, closeTestDataSource } from "../../test-utils/db";
 import { Vehicle } from "../../entities/Vehicle";
 import { VehicleType } from "../../entities/VehicleType";
+import { initializeApp } from "../../index";
+import { closeTestDataSource, getTestDataSource } from "../../test-utils/db";
 
 describe("Trips API", () => {
   let connection: DataSource;
@@ -44,7 +46,7 @@ describe("Trips API", () => {
       VehicleTypeName: "Car"
     });
 
-    const vehicleRepo = connection.getRepository("Vehicle");
+    const vehicleRepo = connection.getRepository(Vehicle);
     await vehicleRepo.query("TRUNCATE TABLE vehicle RESTART IDENTITY CASCADE;");
     await vehicleRepo.save({
       VehicleID: 1,
@@ -56,14 +58,14 @@ describe("Trips API", () => {
       NumberOfRepairs: 3
     });
 
-    const customerRepo = connection.getRepository("Customer");
+    const customerRepo = connection.getRepository(Customer);
     await customerRepo.query("TRUNCATE TABLE customer RESTART IDENTITY CASCADE;");
     await customerRepo.save({
       CustomerID: 1,
       CustomerName: "Google",
       CustomerAddress: "123 Main St"});
 
-    const shipmentRepo = connection.getRepository("Shipment");
+    const shipmentRepo = connection.getRepository(Shipment);
     await shipmentRepo.query("TRUNCATE TABLE shipment RESTART IDENTITY CASCADE;");
     await shipmentRepo.save({
       ShipmentID: 1,

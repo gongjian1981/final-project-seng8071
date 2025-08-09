@@ -1,10 +1,10 @@
 import request from "supertest";
 import { DataSource } from "typeorm";
-import { initializeApp } from "../../index";
-import { Mechanic } from "../../entities/Mechanic";
-import { getTestDataSource, closeTestDataSource } from "../../test-utils/db";
 import { Employee } from "../../entities/Employee";
+import { Mechanic } from "../../entities/Mechanic";
 import { VehicleType } from "../../entities/VehicleType";
+import { initializeApp } from "../../index";
+import { closeTestDataSource, getTestDataSource } from "../../test-utils/db";
 
 describe("Mechanics API", () => {
   let connection: DataSource;

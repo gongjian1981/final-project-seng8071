@@ -18,6 +18,7 @@ export class VehicleService {
     vehicle.Capacity = data.Capacity || 0;
     vehicle.Year = data.Year || new Date().getFullYear();
     vehicle.NumberOfRepairs = data.NumberOfRepairs || 0;
+    vehicle.VehicleType = data.VehicleType;
 
     const errors = await validate(vehicle);
     if (errors.length > 0) {
@@ -41,6 +42,7 @@ export class VehicleService {
     vehicle.Capacity = data.Capacity || 0;
     vehicle.Year = data.Year || new Date().getFullYear();
     vehicle.NumberOfRepairs = data.NumberOfRepairs || 0;
+    vehicle.VehicleType = data.VehicleType;
 
     const errors = await validate(vehicle);
     if (errors.length > 0) {

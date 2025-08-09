@@ -1,8 +1,7 @@
-import { VehicleTypeService } from "../../services/VehicleTypeService";
 import { VehicleType } from "../../entities/VehicleType";
 import { PersistenceError } from "../../errors/PersistenceError";
 import { VehicleTypeRepository } from "../../repositories/VehicleTypeRepository";
-import { get } from "http";
+import { VehicleTypeService } from "../../services/VehicleTypeService";
 
 describe("VehicleTypeService", () => {
   const mockVehicleType = new VehicleType();
@@ -46,9 +45,8 @@ describe("VehicleTypeService", () => {
     expect(result).toEqual(newVehicleType);
   });
 
-  it("throws PersistenceError for invalid vehicle type data", async () => {
+  it("throws PersistenceError for creating vehicle type without type name", async () => {
     const invalidVehicleType = new VehicleType();
-    invalidVehicleType.VehicleTypeName = "";
     const service = new VehicleTypeService(mockRepo as unknown as VehicleTypeRepository);
     await expect(service.createVehicleType(invalidVehicleType)).rejects.toThrow(
       PersistenceError
@@ -68,7 +66,7 @@ describe("VehicleTypeService", () => {
     expect(mockRepo.update).toHaveBeenCalledWith(editedVehicleType);
   });
 
-  it("throws PersistenceError for invalid vehicle type data", async () => {
+  it("throws PersistenceError for updating vehicle type without type name", async () => {
     const invalidVehicleType = new VehicleType();
     await expect(service.updateVehicleType(invalidVehicleType)).rejects.toThrow(
       PersistenceError

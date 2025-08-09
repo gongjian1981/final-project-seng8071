@@ -1,17 +1,18 @@
-import { TripDriverService } from "../../services/TripDriverService";
+import { Driver } from "../../entities/Driver";
+import { Trip } from "../../entities/Trip";
 import { TripDriver } from "../../entities/TripDriver";
 import { PersistenceError } from "../../errors/PersistenceError";
 import { TripDriverRepository } from "../../repositories/TripDriverRepository";
-import { get } from "http";
-import { Trip } from "../../entities/Trip";
-import { Driver } from "../../entities/Driver";
+import { TripDriverService } from "../../services/TripDriverService";
 
 describe("TripDriverService", () => {
   const mockTripDriver = new TripDriver();
   mockTripDriver.TripDriverID = 1;
+
   const mockTrip = new Trip();
   mockTrip.TripID = 1;
   mockTripDriver.Trip = mockTrip;
+
   const mockDriver = new Driver();
   mockDriver.DriverID = 1;
   mockTripDriver.Driver = mockDriver;
@@ -54,8 +55,22 @@ describe("TripDriverService", () => {
     expect(result).toEqual(newTripDriver);
   });
 
-  it("throws PersistenceError for invalid trip driver data", async () => {
+  it("throws PersistenceError for creating trip driver without trip", async () => {
     const invalidTripDriver = new TripDriver();
+    invalidTripDriver.Driver = mockDriver;
+    const service = new TripDriverService(mockRepo as unknown as TripDriverRepository);
+    await expect(service.createTripDriver(invalidTripDriver)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.createTripDriver(invalidTripDriver)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for creating trip driver without driver", async () => {
+    const invalidTripDriver = new TripDriver();
+    invalidTripDriver.Trip = mockTrip;
     const service = new TripDriverService(mockRepo as unknown as TripDriverRepository);
     await expect(service.createTripDriver(invalidTripDriver)).rejects.toThrow(
       PersistenceError
@@ -77,8 +92,36 @@ describe("TripDriverService", () => {
     expect(mockRepo.update).toHaveBeenCalledWith(editedTripDriver);
   });
 
-  it("throws PersistenceError for invalid trip driver data", async () => {
+  it("throws PersistenceError for updating trip driver without TripDriverID", async () => {
     const invalidTripDriver = new TripDriver();
+    invalidTripDriver.Trip = mockTrip;
+    invalidTripDriver.Driver = mockDriver;
+    await expect(service.updateTripDriver(invalidTripDriver)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.updateTripDriver(invalidTripDriver)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for updating trip driver without trip", async () => {
+    const invalidTripDriver = new TripDriver();
+    invalidTripDriver.TripDriverID = 1;
+    invalidTripDriver.Driver = mockDriver;
+    await expect(service.updateTripDriver(invalidTripDriver)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.updateTripDriver(invalidTripDriver)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for updating trip driver without driver", async () => {
+    const invalidTripDriver = new TripDriver();
+    invalidTripDriver.TripDriverID = 1;
+    invalidTripDriver.Trip = mockTrip;
     await expect(service.updateTripDriver(invalidTripDriver)).rejects.toThrow(
       PersistenceError
     );

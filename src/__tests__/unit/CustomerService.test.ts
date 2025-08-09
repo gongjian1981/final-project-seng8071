@@ -1,8 +1,7 @@
-import { CustomerService } from "../../services/CustomerService";
 import { Customer } from "../../entities/Customer";
 import { PersistenceError } from "../../errors/PersistenceError";
 import { CustomerRepository } from "../../repositories/CustomerRepository";
-import { get } from "http";
+import { CustomerService } from "../../services/CustomerService";
 
 describe("CustomerService", () => {
   const mockCustomer = new Customer();
@@ -48,9 +47,22 @@ describe("CustomerService", () => {
     expect(result).toEqual(newCustomer);
   });
 
-  it("throws PersistenceError for invalid customer data", async () => {
+  it("throws PersistenceError for creating customer without customer name", async () => {
     const invalidCustomer = new Customer();
-    invalidCustomer.CustomerName = "";
+    invalidCustomer.CustomerName = "Microsoft";
+    const service = new CustomerService(mockRepo as unknown as CustomerRepository);
+    await expect(service.createCustomer(invalidCustomer)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.createCustomer(invalidCustomer)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for creating customer without customer address", async () => {
+    const invalidCustomer = new Customer();
+    invalidCustomer.CustomerAddress = "123 Main St";
     const service = new CustomerService(mockRepo as unknown as CustomerRepository);
     await expect(service.createCustomer(invalidCustomer)).rejects.toThrow(
       PersistenceError
@@ -72,8 +84,36 @@ describe("CustomerService", () => {
     expect(mockRepo.update).toHaveBeenCalledWith(editedCustomer);
   });
 
-  it("throws PersistenceError for invalid customer data", async () => {
+  it("throws PersistenceError for updating customer without CustomerID", async () => {
     const invalidCustomer = new Customer();
+    invalidCustomer.CustomerName = "Invalid Customer";
+    invalidCustomer.CustomerAddress = "Invalid Address";
+    await expect(service.updateCustomer(invalidCustomer)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.updateCustomer(invalidCustomer)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for updating customer without customer address", async () => {
+    const invalidCustomer = new Customer();
+    invalidCustomer.CustomerID = 1;
+    invalidCustomer.CustomerName = "Invalid Customer";
+    await expect(service.updateCustomer(invalidCustomer)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.updateCustomer(invalidCustomer)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for updating customer without customer name", async () => {
+    const invalidCustomer = new Customer();
+    invalidCustomer.CustomerID = 1;
+    invalidCustomer.CustomerAddress = "Invalid Address";
     await expect(service.updateCustomer(invalidCustomer)).rejects.toThrow(
       PersistenceError
     );

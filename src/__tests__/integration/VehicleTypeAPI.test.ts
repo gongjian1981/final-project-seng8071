@@ -1,8 +1,8 @@
 import request from "supertest";
 import { DataSource } from "typeorm";
-import { initializeApp } from "../../index";
 import { VehicleType } from "../../entities/VehicleType";
-import { getTestDataSource, closeTestDataSource } from "../../test-utils/db";
+import { initializeApp } from "../../index";
+import { closeTestDataSource, getTestDataSource } from "../../test-utils/db";
 
 describe("VehicleTypes API", () => {
   let connection: DataSource;
@@ -26,6 +26,7 @@ describe("VehicleTypes API", () => {
     process.env.NODE_ENV = "test";
     connection = await getTestDataSource();
     app = await initializeApp(connection);
+    
     const repo = connection.getRepository(VehicleType);
     await repo.query("TRUNCATE TABLE vehicle_type RESTART IDENTITY CASCADE;");
     await Promise.all(initialVehicleTypes.map((type) => repo.save(type)));

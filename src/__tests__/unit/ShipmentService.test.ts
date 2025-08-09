@@ -1,9 +1,8 @@
-import { ShipmentService } from "../../services/ShipmentService";
+import { Customer } from "../../entities/Customer";
 import { Shipment } from "../../entities/Shipment";
 import { PersistenceError } from "../../errors/PersistenceError";
 import { ShipmentRepository } from "../../repositories/ShipmentRepository";
-import { get } from "http";
-import { Customer } from "../../entities/Customer";
+import { ShipmentService } from "../../services/ShipmentService";
 
 describe("ShipmentService", () => {
   const mockShipment = new Shipment();
@@ -12,6 +11,7 @@ describe("ShipmentService", () => {
   mockShipment.Value = 98.76;
   mockShipment.OriginPlace = "Toronto";
   mockShipment.DestinationPlace = "Vancouver";
+  
   const mockCustomer = new Customer();
   mockCustomer.CustomerID = 1;
   mockShipment.Customer = mockCustomer
@@ -57,8 +57,44 @@ describe("ShipmentService", () => {
     expect(result).toEqual(newShipment);
   });
 
-  it("throws PersistenceError for invalid shipment data", async () => {
+  it("throws PersistenceError for creating shipment without origin place", async () => {
     const invalidShipment = new Shipment();
+    invalidShipment.Weight = 100;
+    invalidShipment.Value = 98.76;
+    invalidShipment.DestinationPlace = "Vancouver";
+    invalidShipment.Customer = mockCustomer;
+    const service = new ShipmentService(mockRepo as unknown as ShipmentRepository);
+    await expect(service.createShipment(invalidShipment)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.createShipment(invalidShipment)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for creating shipment without destination place", async () => {
+    const invalidShipment = new Shipment();
+    invalidShipment.Weight = 100;
+    invalidShipment.Value = 98.76;
+    invalidShipment.OriginPlace = "Toronto";
+    invalidShipment.Customer = mockCustomer;
+    const service = new ShipmentService(mockRepo as unknown as ShipmentRepository);
+    await expect(service.createShipment(invalidShipment)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.createShipment(invalidShipment)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for creating shipment without customer", async () => {
+    const invalidShipment = new Shipment();
+    invalidShipment.Weight = 100;
+    invalidShipment.Value = 98.76;
+    invalidShipment.OriginPlace = "Toronto";
+    invalidShipment.DestinationPlace = "Vancouver";
     const service = new ShipmentService(mockRepo as unknown as ShipmentRepository);
     await expect(service.createShipment(invalidShipment)).rejects.toThrow(
       PersistenceError
@@ -86,8 +122,61 @@ describe("ShipmentService", () => {
     expect(mockRepo.update).toHaveBeenCalledWith(editedShipment);
   });
 
-  it("throws PersistenceError for invalid shipment data", async () => {
+  it("throws PersistenceError for updating shipment without ShipmentID", async () => {
     const invalidShipment = new Shipment();
+    invalidShipment.Weight = 100;
+    invalidShipment.Value = 98.76;
+    invalidShipment.OriginPlace = "Toronto";
+    invalidShipment.DestinationPlace = "Vancouver";
+    invalidShipment.Customer = mockCustomer;
+    await expect(service.updateShipment(invalidShipment)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.updateShipment(invalidShipment)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for updating shipment without origin place", async () => {
+    const invalidShipment = new Shipment();
+    invalidShipment.ShipmentID = 1;
+    invalidShipment.Weight = 100;
+    invalidShipment.Value = 98.76;
+    invalidShipment.DestinationPlace = "Vancouver";
+    invalidShipment.Customer = mockCustomer;
+    await expect(service.updateShipment(invalidShipment)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.updateShipment(invalidShipment)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for updating shipment without destination place", async () => {
+    const invalidShipment = new Shipment();
+    invalidShipment.ShipmentID = 1;
+    invalidShipment.Weight = 100;
+    invalidShipment.Value = 98.76;
+    invalidShipment.DestinationPlace = "Vancouver";
+    invalidShipment.Customer = mockCustomer;
+    await expect(service.updateShipment(invalidShipment)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.updateShipment(invalidShipment)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for updating shipment without customer", async () => {
+    const invalidShipment = new Shipment();
+    invalidShipment.ShipmentID = 1;
+    invalidShipment.Weight = 100;
+    invalidShipment.Value = 98.76;
+    invalidShipment.OriginPlace = "Toronto";
+    invalidShipment.DestinationPlace = "Vancouver";
     await expect(service.updateShipment(invalidShipment)).rejects.toThrow(
       PersistenceError
     );

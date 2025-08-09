@@ -1,8 +1,7 @@
-import { EmployeeService } from "../../services/EmployeeService";
 import { Employee } from "../../entities/Employee";
 import { PersistenceError } from "../../errors/PersistenceError";
 import { EmployeeRepository } from "../../repositories/EmployeeRepository";
-import { get } from "http";
+import { EmployeeService } from "../../services/EmployeeService";
 
 describe("EmployeeService", () => {
   const mockEmployee = new Employee();
@@ -50,9 +49,22 @@ describe("EmployeeService", () => {
     expect(result).toEqual(newEmployee);
   });
 
-  it("throws PersistenceError for invalid employee data", async () => {
+  it("throws PersistenceError for create employee without first name", async () => {
     const invalidEmployee = new Employee();
-    invalidEmployee.FirstName = "";
+    invalidEmployee.FirstName = "Kevin";
+    const service = new EmployeeService(mockRepo as unknown as EmployeeRepository);
+    await expect(service.createEmployee(invalidEmployee)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.createEmployee(invalidEmployee)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for create employee without surname", async () => {
+    const invalidEmployee = new Employee();
+    invalidEmployee.Surname = "Johnson";
     const service = new EmployeeService(mockRepo as unknown as EmployeeRepository);
     await expect(service.createEmployee(invalidEmployee)).rejects.toThrow(
       PersistenceError
@@ -76,8 +88,36 @@ describe("EmployeeService", () => {
     expect(mockRepo.update).toHaveBeenCalledWith(editedEmployee);
   });
 
-  it("throws PersistenceError for invalid employee data", async () => {
+  it("throws PersistenceError for updating employee without EmployeeID", async () => {
     const invalidEmployee = new Employee();
+    invalidEmployee.FirstName = "Invalid";
+    invalidEmployee.Surname = "Employee";
+    await expect(service.updateEmployee(invalidEmployee)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.updateEmployee(invalidEmployee)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for updating employee without first name", async () => {
+    const invalidEmployee = new Employee();
+    invalidEmployee.EmployeeID = 1;
+    invalidEmployee.Surname = "Invalid";
+    await expect(service.updateEmployee(invalidEmployee)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.updateEmployee(invalidEmployee)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for updating employee without surname", async () => {
+    const invalidEmployee = new Employee();
+    invalidEmployee.EmployeeID = 1;
+    invalidEmployee.FirstName = "Invalid";
     await expect(service.updateEmployee(invalidEmployee)).rejects.toThrow(
       PersistenceError
     );

@@ -1,8 +1,7 @@
-import { DriverService } from "../../services/DriverService";
 import { Driver } from "../../entities/Driver";
 import { PersistenceError } from "../../errors/PersistenceError";
 import { DriverRepository } from "../../repositories/DriverRepository";
-import { get } from "http";
+import { DriverService } from "../../services/DriverService";
 
 describe("DriverService", () => {
   const mockDriver = new Driver();
@@ -46,9 +45,8 @@ describe("DriverService", () => {
     expect(result).toEqual(newDriver);
   });
 
-  it("throws PersistenceError for invalid driver data", async () => {
+  it("throws PersistenceError for creating driver without driver name", async () => {
     const invalidDriver = new Driver();
-    invalidDriver.DriverName = "";
     const service = new DriverService(mockRepo as unknown as DriverRepository);
     await expect(service.createDriver(invalidDriver)).rejects.toThrow(
       PersistenceError
@@ -68,8 +66,21 @@ describe("DriverService", () => {
     expect(mockRepo.update).toHaveBeenCalledWith(editedDriver);
   });
 
-  it("throws PersistenceError for invalid driver data", async () => {
+  it("throws PersistenceError for updating driver without DriverID", async () => {
     const invalidDriver = new Driver();
+    invalidDriver.DriverName = "Invalid Driver";
+    await expect(service.updateDriver(invalidDriver)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.updateDriver(invalidDriver)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for updating driver without driver name", async () => {
+    const invalidDriver = new Driver();
+    invalidDriver.DriverID = 1;
     await expect(service.updateDriver(invalidDriver)).rejects.toThrow(
       PersistenceError
     );

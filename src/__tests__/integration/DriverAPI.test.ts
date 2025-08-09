@@ -26,6 +26,7 @@ describe("Drivers API", () => {
     process.env.NODE_ENV = "test";
     connection = await getTestDataSource();
     app = await initializeApp(connection);
+    
     const repo = connection.getRepository(Driver);
     await repo.query("TRUNCATE TABLE driver RESTART IDENTITY CASCADE;");
     await Promise.all(initialDrivers.map((type) => repo.save(type)));

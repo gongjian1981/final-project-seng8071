@@ -1,9 +1,9 @@
 import request from "supertest";
 import { DataSource } from "typeorm";
-import { initializeApp } from "../../index";
 import { Vehicle } from "../../entities/Vehicle";
-import { getTestDataSource, closeTestDataSource } from "../../test-utils/db";
 import { VehicleType } from "../../entities/VehicleType";
+import { initializeApp } from "../../index";
+import { closeTestDataSource, getTestDataSource } from "../../test-utils/db";
 
 describe("Vehicles API", () => {
   let connection: DataSource;
@@ -42,6 +42,7 @@ describe("Vehicles API", () => {
     process.env.NODE_ENV = "test";
     connection = await getTestDataSource();
     app = await initializeApp(connection);
+    
     const vehicleTypeRepo = connection.getRepository(VehicleType);
     await vehicleTypeRepo.query("TRUNCATE TABLE vehicle_type RESTART IDENTITY CASCADE;");
     await vehicleTypeRepo.save({
@@ -95,6 +96,7 @@ describe("Vehicles API", () => {
       Capacity: 11,
       Year: 2023,
       NumberOfRepairs: 10,
+      VehicleType: { VehicleTypeID: 1}
     };
     const response = await request(app).put("/vehicles").send(editVehicle);
     expect(response.status).toBe(201);

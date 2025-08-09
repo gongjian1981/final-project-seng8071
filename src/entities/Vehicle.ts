@@ -11,6 +11,7 @@ export class Vehicle {
 
   @ManyToOne(() => VehicleType, (vehicleType) => vehicleType.Vehicles)
   @JoinColumn({ name: "VehicleTypeID" })
+  @IsNotEmpty()
   VehicleType?: VehicleType;
 
   @Column()

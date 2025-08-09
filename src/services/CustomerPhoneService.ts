@@ -38,7 +38,6 @@ export class CustomerPhoneService {
 
     const errors = await validate(customerPhone);
     if (errors.length > 0) {
-      console.log(errors);
       const errorMessages = errors
         .map((err) => Object.values(err.constraints || {}).join(", "))
         .join("; ");

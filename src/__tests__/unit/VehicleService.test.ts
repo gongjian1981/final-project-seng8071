@@ -12,6 +12,10 @@ describe("VehicleService", () => {
   mockVehicle.Load = 2000;
   mockVehicle.Year = 2020;
   mockVehicle.NumberOfRepairs = 0;
+
+  const mockVehicleType = new VehicleType();
+  mockVehicleType.VehicleTypeID = 1;
+  mockVehicle.VehicleType = mockVehicleType;
   
   let service: VehicleService;
 
@@ -48,16 +52,29 @@ describe("VehicleService", () => {
     newVehicle.Load = 2000;
     newVehicle.Year = 2020;
     newVehicle.NumberOfRepairs = 0;    
-    
+    newVehicle.VehicleType = mockVehicleType;
     const service = new VehicleService(mockRepo as unknown as VehicleRepository);
     const result = await service.createVehicle(newVehicle);
     expect(mockRepo.create).toHaveBeenCalledWith(newVehicle);
     expect(result).toEqual(newVehicle);
   });
 
-  it("throws PersistenceError for invalid vehicle data", async () => {
+  it("throws PersistenceError for creating vehicle without brand", async () => {
     const invalidVehicle = new Vehicle();
-    invalidVehicle.VehicleID = 1;
+    invalidVehicle.VehicleType = mockVehicleType;
+    const service = new VehicleService(mockRepo as unknown as VehicleRepository);
+    await expect(service.createVehicle(invalidVehicle)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.createVehicle(invalidVehicle)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for creating vehicle without vehicle type", async () => {
+    const invalidVehicle = new Vehicle();
+    invalidVehicle.Brand = "Honda";
     const service = new VehicleService(mockRepo as unknown as VehicleRepository);
     await expect(service.createVehicle(invalidVehicle)).rejects.toThrow(
       PersistenceError
@@ -75,7 +92,8 @@ describe("VehicleService", () => {
     editedVehicle.Capacity = 900;
     editedVehicle.Load = 1999;
     editedVehicle.Year = 2019;
-    editedVehicle.NumberOfRepairs = 9;        
+    editedVehicle.NumberOfRepairs = 9;
+    editedVehicle.VehicleType = mockVehicleType;
     const result = await service.updateVehicle(editedVehicle);
     expect(result.Brand).toBe("XYZ789");
     expect(result.Capacity).toBe(900);
@@ -86,8 +104,48 @@ describe("VehicleService", () => {
     expect(mockRepo.update).toHaveBeenCalledWith(editedVehicle);
   });
 
-  it("throws PersistenceError for invalid vehicle data", async () => {
+  it("throws PersistenceError for updating vehicle without VehicleID", async () => {
     const invalidVehicle = new Vehicle();
+    invalidVehicle.Brand = "Invalid Vehicle";
+    invalidVehicle.Capacity = 1000;
+    invalidVehicle.Load = 2000;
+    invalidVehicle.Year = 2020;
+    invalidVehicle.NumberOfRepairs = 0;
+    invalidVehicle.VehicleType = mockVehicleType;
+    await expect(service.updateVehicle(invalidVehicle)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.updateVehicle(invalidVehicle)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for updating vehicle without brand", async () => {
+    const invalidVehicle = new Vehicle();
+    invalidVehicle.VehicleID = 1;
+    invalidVehicle.Capacity = 1000;
+    invalidVehicle.Load = 2000;
+    invalidVehicle.Year = 2020;
+    invalidVehicle.NumberOfRepairs = 0;
+    invalidVehicle.VehicleType = mockVehicleType;
+    await expect(service.updateVehicle(invalidVehicle)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.updateVehicle(invalidVehicle)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for updating vehicle without vehicle type", async () => {
+    const invalidVehicle = new Vehicle();
+    invalidVehicle.VehicleID = 1;
+    invalidVehicle.Brand = "Invalid Vehicle";
+    invalidVehicle.Capacity = 1000;
+    invalidVehicle.Load = 2000;
+    invalidVehicle.Year = 2020;
+    invalidVehicle.NumberOfRepairs = 0;
     await expect(service.updateVehicle(invalidVehicle)).rejects.toThrow(
       PersistenceError
     );

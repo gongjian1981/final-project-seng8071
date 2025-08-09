@@ -10,9 +10,11 @@ describe("TripService", () => {
   mockTrip.TripID = 1;
   mockTrip.FromPlace = "Toronto";
   mockTrip.ToPlace = "Vancouver";
+
   const mockVehicle = new Vehicle();
   mockVehicle.VehicleID = 1;
   mockTrip.Vehicle = mockVehicle;
+
   const mockShipment = new Shipment();
   mockShipment.ShipmentID = 1;
   mockTrip.Shipment = mockShipment;
@@ -57,8 +59,56 @@ describe("TripService", () => {
     expect(result).toEqual(newTrip);
   });
 
-  it("throws PersistenceError for invalid trip data", async () => {
+  it("throws PersistenceError for creating trip without from place", async () => {
     const invalidTrip = new Trip();
+    invalidTrip.ToPlace = "Invalid Destination";
+    invalidTrip.Vehicle = mockVehicle;
+    invalidTrip.Shipment = mockShipment;
+    const service = new TripService(mockRepo as unknown as TripRepository);
+    await expect(service.createTrip(invalidTrip)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.createTrip(invalidTrip)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for creating trip without to place", async () => {
+    const invalidTrip = new Trip();
+    invalidTrip.FromPlace = "Invalid Trip";
+    invalidTrip.Vehicle = mockVehicle;
+    invalidTrip.Shipment = mockShipment;
+    const service = new TripService(mockRepo as unknown as TripRepository);
+    await expect(service.createTrip(invalidTrip)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.createTrip(invalidTrip)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for creating trip without vehicle", async () => {
+    const invalidTrip = new Trip();
+    invalidTrip.FromPlace = "Invalid Trip";
+    invalidTrip.ToPlace = "Invalid Destination";
+    invalidTrip.Shipment = mockShipment;
+    const service = new TripService(mockRepo as unknown as TripRepository);
+    await expect(service.createTrip(invalidTrip)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.createTrip(invalidTrip)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for creating trip without shipment", async () => {
+    const invalidTrip = new Trip();
+    invalidTrip.FromPlace = "Invalid Trip";
+    invalidTrip.ToPlace = "Invalid Destination";
+    invalidTrip.Vehicle = mockVehicle;
     const service = new TripService(mockRepo as unknown as TripRepository);
     await expect(service.createTrip(invalidTrip)).rejects.toThrow(
       PersistenceError
@@ -82,8 +132,72 @@ describe("TripService", () => {
     expect(mockRepo.update).toHaveBeenCalledWith(editedTrip);
   });
 
-  it("throws PersistenceError for invalid trip data", async () => {
+  it("throws PersistenceError for updating trip without TripID", async () => {
     const invalidTrip = new Trip();
+    invalidTrip.FromPlace = "Invalid Trip";
+    invalidTrip.ToPlace = "Invalid Destination";
+    invalidTrip.Vehicle = mockVehicle;
+    invalidTrip.Shipment = mockShipment;
+    await expect(service.updateTrip(invalidTrip)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.updateTrip(invalidTrip)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for updating trip without from place", async () => {
+    const invalidTrip = new Trip();
+    invalidTrip.TripID = 1;
+    invalidTrip.ToPlace = "Invalid Destination";
+    invalidTrip.Vehicle = mockVehicle;
+    invalidTrip.Shipment = mockShipment;
+    await expect(service.updateTrip(invalidTrip)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.updateTrip(invalidTrip)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for updating trip without to place", async () => {
+    const invalidTrip = new Trip();
+    invalidTrip.TripID = 1;
+    invalidTrip.FromPlace = "Invalid Trip";
+    invalidTrip.Vehicle = mockVehicle;
+    invalidTrip.Shipment = mockShipment;
+    await expect(service.updateTrip(invalidTrip)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.updateTrip(invalidTrip)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for updating trip without vehicle", async () => {
+    const invalidTrip = new Trip();
+    invalidTrip.TripID = 1;
+    invalidTrip.FromPlace = "Invalid Trip";
+    invalidTrip.ToPlace = "Invalid Destination";
+    invalidTrip.Shipment = mockShipment;
+    await expect(service.updateTrip(invalidTrip)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.updateTrip(invalidTrip)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for updating trip without shipment", async () => {
+    const invalidTrip = new Trip();
+    invalidTrip.TripID = 1;
+    invalidTrip.FromPlace = "Invalid Trip";
+    invalidTrip.ToPlace = "Invalid Destination";
+    invalidTrip.Vehicle = mockVehicle;
     await expect(service.updateTrip(invalidTrip)).rejects.toThrow(
       PersistenceError
     );

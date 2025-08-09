@@ -1,18 +1,19 @@
-import { CertificationService } from "../../services/CertificationService";
 import { Certification } from "../../entities/Certification";
+import { Employee } from "../../entities/Employee";
+import { VehicleType } from "../../entities/VehicleType";
 import { PersistenceError } from "../../errors/PersistenceError";
 import { CertificationRepository } from "../../repositories/CertificationRepository";
-import { get } from "http";
-import { VehicleType } from "../../entities/VehicleType";
-import { Employee } from "../../entities/Employee";
+import { CertificationService } from "../../services/CertificationService";
 
 describe("CertificationService", () => {
   const mockCertification = new Certification();
   mockCertification.CertificationID = 1;
+
   const mockVihecleType = new VehicleType();
   mockVihecleType.VehicleTypeID = 1;
   mockVihecleType.VehicleTypeName = "Cargo Truck";
   mockCertification.VehicleType = mockVihecleType;
+  
   const mockEmployee = new Employee();
   mockEmployee.EmployeeID = 1;
   mockEmployee.FirstName = "John";
@@ -57,8 +58,22 @@ describe("CertificationService", () => {
     expect(result).toEqual(newCertification);
   });
 
-  it("throws PersistenceError for invalid certification data", async () => {
+  it("throws PersistenceError for creating certification without employee", async () => {
     const invalidCertification = new Certification();
+    invalidCertification.VehicleType = mockVihecleType;
+    const service = new CertificationService(mockRepo as unknown as CertificationRepository);
+    await expect(service.createCertification(invalidCertification)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.createCertification(invalidCertification)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for creating certification without vehicle type", async () => {
+    const invalidCertification = new Certification();
+    invalidCertification.Employee = mockEmployee;
     const service = new CertificationService(mockRepo as unknown as CertificationRepository);
     await expect(service.createCertification(invalidCertification)).rejects.toThrow(
       PersistenceError
@@ -80,8 +95,36 @@ describe("CertificationService", () => {
     expect(mockRepo.update).toHaveBeenCalledWith(editedCertification);
   });
 
-  it("throws PersistenceError for invalid certification data", async () => {
+  it("throws PersistenceError for updating certification without CertificationID", async () => {
     const invalidCertification = new Certification();
+    invalidCertification.VehicleType = mockVihecleType;
+    invalidCertification.Employee = mockEmployee;
+    await expect(service.updateCertification(invalidCertification)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.updateCertification(invalidCertification)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for updating certification without employee", async () => {
+    const invalidCertification = new Certification();
+    invalidCertification.CertificationID = 1;
+    invalidCertification.VehicleType = mockVihecleType;
+    await expect(service.updateCertification(invalidCertification)).rejects.toThrow(
+      PersistenceError
+    );
+    await expect(service.updateCertification(invalidCertification)).rejects.toHaveProperty(
+      "status",
+      400
+    );
+  });
+
+  it("throws PersistenceError for updating certification without vehicle type", async () => {
+    const invalidCertification = new Certification();
+    invalidCertification.CertificationID = 1;
+    invalidCertification.Employee = mockEmployee;
     await expect(service.updateCertification(invalidCertification)).rejects.toThrow(
       PersistenceError
     );

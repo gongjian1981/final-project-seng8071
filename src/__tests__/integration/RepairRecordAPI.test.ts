@@ -1,11 +1,11 @@
 import request from "supertest";
 import { DataSource } from "typeorm";
-import { initializeApp } from "../../index";
+import { Mechanic } from "../../entities/Mechanic";
 import { RepairRecord } from "../../entities/RepairRecord";
-import { getTestDataSource, closeTestDataSource } from "../../test-utils/db";
-import { Employee } from "../../entities/Employee";
 import { Vehicle } from "../../entities/Vehicle";
 import { VehicleType } from "../../entities/VehicleType";
+import { initializeApp } from "../../index";
+import { closeTestDataSource, getTestDataSource } from "../../test-utils/db";
 
 describe("RepairRecords API", () => {
   let connection: DataSource;
@@ -45,7 +45,7 @@ describe("RepairRecords API", () => {
       VehicleTypeName: "Car"
     });
 
-    const vehicleRepo = connection.getRepository("Vehicle");
+    const vehicleRepo = connection.getRepository(Vehicle);
     await vehicleRepo.query("TRUNCATE TABLE vehicle RESTART IDENTITY CASCADE;");
     await vehicleRepo.save({
       VehicleID: 1,
@@ -57,7 +57,7 @@ describe("RepairRecords API", () => {
       NumberOfRepairs: 3
     });
 
-    const mechanicRepo = connection.getRepository("Mechanic");
+    const mechanicRepo = connection.getRepository(Mechanic);
     await mechanicRepo.query("TRUNCATE TABLE mechanic RESTART IDENTITY CASCADE;");
     await mechanicRepo.save({
       MechanicID: 1,
@@ -83,7 +83,7 @@ describe("RepairRecords API", () => {
   it("creates a repair record", async () => {
     const newRepairRecord = {
       RepairRecordID: 4,
-      Vehicle: { VehicleID: 1, VehicleName: "Car" },
+      Vehicle: { VehicleID: 1, VehicleType: {VehicleTypeID: 1, VehicleTypeName: "Car" } },
       Mechanic: { MechanicID: 1, MechanicName: "John Doe" },
       EstimatedTime: 200,
       ActualCostTime: 200
