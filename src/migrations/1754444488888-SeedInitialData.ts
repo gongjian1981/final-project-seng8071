@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class SeedInitialData1707332800005 implements MigrationInterface {
+export class SeedInitialData1754444488888 implements MigrationInterface {
   public static readonly transaction = false;
 
   public async up(queryRunner: QueryRunner): Promise<void> {
