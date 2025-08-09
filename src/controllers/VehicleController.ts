@@ -42,7 +42,7 @@ export const createVehicleRouter = (dataSource: DataSource): Router => {
 
   router.delete("/:id", async (req, res) => {
     try {
-      // await service.deleteVehicle(req.params.id);
+      await service.deleteVehicle(Number(req.params.id));
       res.status(204).send();
     } catch (error: any) {
       const status = error instanceof PersistenceError ? error.status : 404;

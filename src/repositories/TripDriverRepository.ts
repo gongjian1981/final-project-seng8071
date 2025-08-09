@@ -24,7 +24,7 @@ export class TripDriverRepository {
     return this.repo.save(tripDriver);
   }
   
-  async update(tripDriver: Partial<TripDriver>): Promise<TripDriver> {
+  async update(tripDriver: TripDriver): Promise<TripDriver> {
     return this.repo.save(tripDriver);
   }
 

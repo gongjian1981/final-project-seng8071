@@ -1,4 +1,4 @@
-import { IsNumber } from "class-validator";
+import { IsNotEmpty, IsNumber } from "class-validator";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Mechanic } from "./Mechanic";
 import { Vehicle } from "./Vehicle";
@@ -10,10 +10,12 @@ export class RepairRecord {
 
   @ManyToOne(() => Vehicle, (vehicle) => vehicle.RepairRecords)
   @JoinColumn({ name: "VehicleID" })
+  @IsNotEmpty()
   Vehicle?: Vehicle;
 
   @ManyToOne(() => Mechanic, (mechanic) => mechanic.RepairRecords)
   @JoinColumn({ name: "MechanicID" })
+  @IsNotEmpty()
   Mechanic?: Mechanic;
 
   @Column()

@@ -30,6 +30,7 @@ export class VehicleTypeService {
     if (!data.VehicleTypeID) {
       throw new PersistenceError("VehicleTypeID is required for update", 400);
     }
+
     const vehicleType = await this.repo.findById(data.VehicleTypeID);
 
     vehicleType.VehicleTypeName = data.VehicleTypeName || "";

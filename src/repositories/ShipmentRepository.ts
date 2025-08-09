@@ -24,7 +24,7 @@ export class ShipmentRepository {
     return this.repo.save(shipment);
   }
 
-  async update(shipment: Partial<Shipment>): Promise<Shipment> {
+  async update(shipment: Shipment): Promise<Shipment> {
     return this.repo.save(shipment);
   }
   

@@ -11,10 +11,12 @@ export class Trip {
 
   @ManyToOne(() => Vehicle, (vehicle) => vehicle.Trips)
   @JoinColumn({ name: "VehicleID" })
+  @IsNotEmpty()
   Vehicle?: Vehicle;
 
   @ManyToOne(() => Shipment, (shipment) => shipment.Trips)
   @JoinColumn({ name: "ShipmentID" })
+  @IsNotEmpty()
   Shipment?: Shipment;
 
   @Column()

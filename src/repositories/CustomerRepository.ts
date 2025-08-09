@@ -24,7 +24,7 @@ export class CustomerRepository {
     return this.repo.save(customer);
   }
 
-  async update(customer: Partial<Customer>): Promise<Customer> {
+  async update(customer: Customer): Promise<Customer> {
     return this.repo.save(customer);
   }
 

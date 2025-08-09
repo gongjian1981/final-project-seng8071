@@ -24,7 +24,7 @@ export class MechanicRepository {
     return this.repo.save(mechanic);
   }
 
-  async update(mechanic: Partial<Mechanic>): Promise<Mechanic> {
+  async update(mechanic: Mechanic): Promise<Mechanic> {
     return this.repo.save(mechanic);
   }
 

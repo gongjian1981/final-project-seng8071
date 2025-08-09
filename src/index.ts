@@ -1,6 +1,8 @@
 import express from "express";
+import path from "path";
+import fs from "fs";
 import { ConnectionOptions, DataSource } from "typeorm";
-import { createCertificationRouter, createCustomerRouter, createDriverRouter, createEmployeeRouter, createMechanicRouter, createRepairRecordRouter, createShipmentRouter, createTripDriverRouter, createTripRouter, createVehicleRouter } from "./controllers";
+import { createCertificationRouter, createCustomerPhoneRouter, createCustomerRouter, createDriverRouter, createEmployeeRouter, createMechanicRouter, createRepairRecordRouter, createShipmentRouter, createTripDriverRouter, createTripRouter, createVehicleRouter } from "./controllers";
 import { createVehicleTypeRouter } from "./controllers/VehicleTypeController";
 
 export const app = express();
@@ -28,9 +30,25 @@ export const initializeApp = async (
     await dataSource.initialize();
   }
 
+  app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "..", "public", "index.html"));
+  });
+
+  app.get("/api/:page", (req, res, next) => {
+    const staticHtmlPath = path.join(__dirname, "..", "public", "api", `${req.params.page}.html`);
+  
+    fs.access(staticHtmlPath, fs.constants.F_OK, (err) => {
+      if (err) {
+        return next();
+      } else {
+        res.sendFile(staticHtmlPath);
+      }
+    });
+  });
+
   app.use("/certifications", createCertificationRouter(dataSource));
   app.use("/customers", createCustomerRouter(dataSource));
-  app.use("/customerphones", createCustomerRouter(dataSource));
+  app.use("/customerphones", createCustomerPhoneRouter(dataSource));
   app.use("/drivers", createDriverRouter(dataSource));
   app.use("/employees", createEmployeeRouter(dataSource));
   app.use("/mechanics", createMechanicRouter(dataSource));

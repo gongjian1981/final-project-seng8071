@@ -24,7 +24,7 @@ export class VehicleTypeRepository {
     return this.repo.save(vehicleType);
   }
   
-  async update(vehicleType: Partial<VehicleType>): Promise<VehicleType> {
+  async update(vehicleType: VehicleType): Promise<VehicleType> {
     return this.repo.save(vehicleType);
   }
 

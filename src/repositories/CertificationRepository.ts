@@ -24,7 +24,7 @@ export class CertificationRepository {
     return this.repo.save(certification);
   }
   
-  async update(certification: Partial<Certification>): Promise<Certification> {
+  async update(certification: Certification): Promise<Certification> {
     return this.repo.save(certification);
   }
 

@@ -10,6 +10,7 @@ export class Shipment {
 
   @ManyToOne(() => Customer, (customer) => customer.CustomerPhones)
   @JoinColumn({ name: "CustomerID" })
+  @IsNotEmpty()
   Customer?: Customer;
 
   @Column()

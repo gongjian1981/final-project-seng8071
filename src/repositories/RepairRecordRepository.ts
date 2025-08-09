@@ -24,7 +24,7 @@ export class RepairRecordRepository {
     return this.repo.save(repairRecord);
   }
   
-  async update(repairRecord: Partial<RepairRecord>): Promise<RepairRecord> {
+  async update(repairRecord: RepairRecord): Promise<RepairRecord> {
     return this.repo.save(repairRecord);
   }
 

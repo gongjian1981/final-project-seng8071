@@ -24,7 +24,7 @@ export class TripRepository {
     return this.repo.save(trip);
   }
   
-  async update(trip: Partial<Trip>): Promise<Trip> {
+  async update(trip: Trip): Promise<Trip> {
     return this.repo.save(trip);
   }
 

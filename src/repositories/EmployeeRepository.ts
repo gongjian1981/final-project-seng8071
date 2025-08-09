@@ -24,7 +24,7 @@ export class EmployeeRepository {
     return this.repo.save(employee);
   }
 
-  async update(employee: Partial<Employee>): Promise<Employee> {
+  async update(employee: Employee): Promise<Employee> {
     return this.repo.save(employee);
   }
 

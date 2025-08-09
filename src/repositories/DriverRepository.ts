@@ -24,7 +24,7 @@ export class DriverRepository {
     return this.repo.save(driver);
   }
 
-  async update(driver: Partial<Driver>): Promise<Driver> {
+  async update(driver: Driver): Promise<Driver> {
     return this.repo.save(driver);
   }
 
