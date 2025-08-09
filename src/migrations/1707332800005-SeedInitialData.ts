@@ -1,9 +1,15 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class SeedInitialData1707332800004 implements MigrationInterface {
+export class SeedInitialData1707332800005 implements MigrationInterface {
   public static readonly transaction = false;
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    // Clear existing data
+    await queryRunner.query(`TRUNCATE TABLE trip_driver, 
+      driver, trip, shipment, customer_phone, customer, repair_record, 
+      mechanic, certification, employee, vehicle, vehicle_type 
+      RESTART IDENTITY CASCADE;;`);
+
     // Insert vehicle types
     await queryRunner.query(`
       INSERT INTO vehicle_type ("VehicleTypeName")

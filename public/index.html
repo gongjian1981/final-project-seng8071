@@ -1,1 +1,208 @@
-<h1>Hello World</h1>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Final Project</title>
+    <style type="text/css">
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&display=swap');
+      /* ===== Base tokens ===== */
+      :root {
+        --tbl-bg: #fff;
+        --tbl-fg: #0f172a;
+        --tbl-muted: #64748b;
+        --tbl-border: #e2e8f0;
+        --tbl-accent: #3b82f6;
+        --tbl-row: #ffffff;
+        --tbl-row-alt: #fafafa;
+        --tbl-hover: #f1f5f9;
+        --tbl-shadow: 0 6px 16px rgba(15, 23, 42, .06);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --tbl-bg: #0b1220;
+          --tbl-fg: #e5e7eb;
+          --tbl-muted: #94a3b8;
+          --tbl-border: #1f2937;
+          --tbl-row: #0f172a;
+          --tbl-row-alt: #111827;
+          --tbl-hover: #172033;
+          --tbl-shadow: 0 8px 20px rgba(0, 0, 0, .35);
+        }
+      }
+
+      /* ===== Wrapper: scroll + edge-fade ===== */
+      .table-wrap {
+        background: var(--tbl-bg);
+        border: 1px solid var(--tbl-border);
+        border-radius: 14px;
+        box-shadow: var(--tbl-shadow);
+        overflow: auto;
+        position: relative;
+      }
+
+      .table-wrap::before,
+      .table-wrap::after {
+        content: "";
+        position: sticky;
+        top: 0;
+        width: 16px;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+      }
+      .table-wrap::before {
+        left: 0;
+        background: linear-gradient(90deg, var(--tbl-bg) 0%, transparent 100%);
+      }
+      .table-wrap::after {
+        right: 0;
+        background: linear-gradient(270deg, var(--tbl-bg) 0%, transparent 100%);
+      }
+
+      /* ===== Table core ===== */
+      .nice-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        color: var(--tbl-fg);
+        background: var(--tbl-bg);
+        min-width: 720px;
+        font-family: 'Inter', 'Noto Sans SC', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+      }
+
+      .nice-table thead th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: var(--tbl-bg);
+        color: var(--tbl-muted);
+        text-align: left;
+        font-weight: 600;
+        letter-spacing: .02em;
+        border-bottom: 1px solid var(--tbl-border);
+        padding: 14px 16px;
+        white-space: nowrap;
+      }
+
+      .nice-table td {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--tbl-border);
+        vertical-align: middle;
+      }
+
+      .nice-table tbody tr:nth-child(odd) td {
+        background: var(--tbl-row);
+      }
+      .nice-table tbody tr:nth-child(even) td {
+        background: var(--tbl-row-alt);
+      }
+
+      .nice-table tbody tr:hover td {
+        background: var(--tbl-hover);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="table-wrap" data-density="comfortable" style="max-width: 80%; margin: 40px auto;">
+      <table class="nice-table">
+        <thead>
+      <tr>
+        <th>Module</th>
+        <th>Retrive</th>
+        <th>Create</th>
+        <th>Update</th>
+        <th>Delete</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Vehicle Type</td>
+        <td><a href="/vehicletypes" target="_blank">GET /vehicletypes</a></td>
+        <td>POST /vehicletypes</td>
+        <td>PUT /vehicletypes</td>
+        <td>DELETE /vehicletypes/:id</td>
+      </tr>
+      <tr>
+        <td>Employee</td>
+        <td><a href="/employees" target="_blank">GET /employees</a></td>
+        <td>POST /employees</td>
+        <td>PUT /employees</td>
+        <td>DELETE /employees/:id</td>
+      </tr>
+      <tr>
+        <td>Customer</td>
+        <td><a href="/customers" target="_blank">GET /customers</a></td>
+        <td>POST /customers</td>
+        <td>PUT /customers</td>
+        <td>DELETE /customers/:id</td>
+      </tr>
+      <tr>
+        <td>Driver</td>
+        <td><a href="/drivers" target="_blank">GET /drivers</a></td>
+        <td>POST /drivers</td>
+        <td>PUT /drivers</td>
+        <td>DELETE /drivers/:id</td>
+      </tr>
+      <tr>
+        <td>Vehicle</td>
+        <td><a href="/vehicles" target="_blank">GET /vehicles</a></td>
+        <td>POST /vehicles</td>
+        <td>PUT /vehicles</td>
+        <td>DELETE /vehicles/:id</td>
+      </tr>
+      <tr>
+        <td>Certification</td>
+        <td><a href="/certifications" target="_blank">GET /certifications</a></td>
+        <td>POST /certifications</td>
+        <td>PUT /certifications</td>
+        <td>DELETE /certifications/:id</td>
+      </tr>
+      <tr>
+        <td>Mechanic</td>
+        <td><a href="/mechanics" target="_blank">GET /mechanics</a></td>
+        <td>POST /mechanics</td>
+        <td>PUT /mechanics</td>
+        <td>DELETE /mechanics/:id</td>
+      </tr>
+      <tr>
+        <td>Customer Phone</td>
+        <td><a href="/customerphones" target="_blank">GET /customerphones</a></td>
+        <td>POST /customerphones</td>
+        <td>PUT /customerphones</td>
+        <td>DELETE /customerphones/:id</td>
+      </tr>
+      <tr>
+        <td>Repair Record</td>
+        <td><a href="/repairrecords" target="_blank">GET /repairrecords</a></td>
+        <td>POST /repairrecords</td>
+        <td>PUT /repairrecords</td>
+        <td>DELETE /repairrecords/:id</td>
+      </tr>
+      <tr>
+        <td>Shipment</td>
+        <td><a href="/shipments" target="_blank">GET /shipments</a></td>
+        <td>POST /shipments</td>
+        <td>PUT /shipments</td>
+        <td>DELETE /shipments/:id</td>
+      </tr>
+      <tr>
+        <td>Trip</td>
+        <td><a href="/trips" target="_blank">GET /trips</a></td>
+        <td>POST /trips</td>
+        <td>PUT /trips</td>
+        <td>DELETE /trips/:id</td>
+      </tr>
+      <tr>
+        <td>Trip Driver</td>
+        <td><a href="/tripdrivers" target="_blank">GET /tripdrivers</a></td>
+        <td>POST /tripdrivers</td>
+        <td>PUT /tripdrivers</td>
+        <td>DELETE /tripdrivers/:id</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+  </body>
+</html>

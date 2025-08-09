@@ -62,3 +62,13 @@ This runs all tests using Jest.
 | `npm start`          | Start the server using ts-node       |
 | `npm test`           | Run unit/integration tests via Jest  |
 | `npm run docker:up`  | Start Docker containers via Compose  |
+
+## API List
+
+After starting the server, open [http://localhost:3000/](http://localhost:3000/) in your browser to see the API List.
+
+## Migrations
+
+```bash
+npx ts-node ./node_modules/typeorm/cli.js migration:run -d src/data-source.ts
+```
